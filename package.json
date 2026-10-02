@@ -1,0 +1,36 @@
+{
+  "name": "distributed-skills-mcp",
+  "version": "0.1.0",
+  "description": "An open-source MCP server for discovering and reading recursively organized Agent Skills.",
+  "type": "module",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/mehLabs/distributed-skills.git" },
+  "homepage": "https://github.com/mehLabs/distributed-skills#readme",
+  "bugs": { "url": "https://github.com/mehLabs/distributed-skills/issues" },
+  "keywords": ["mcp", "agent-skills", "skills", "llm", "self-hosted"],
+  "engines": { "node": ">=22" },
+  "bin": { "distributed-skills-mcp": "dist/cli.js" },
+  "exports": { ".": { "types": "./dist/server.d.ts", "import": "./dist/server.js" } },
+  "files": ["dist", "skills", "examples", "docs", "skills-mcp.config.example.json", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "test": "tsx --test test/*.test.ts",
+    "check": "npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.3.0",
+    "@modelcontextprotocol/node": "^2.1.1",
+    "yaml": "^2.8.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.3.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

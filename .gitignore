@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.cache/
+coverage/
+.env
+skills-mcp.config.json
+*.log
+*.tgz

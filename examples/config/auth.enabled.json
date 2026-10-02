@@ -1,0 +1,13 @@
+{
+  "authentication": {
+    "enabled": true,
+    "resourceUrl": "https://skills.example.org/mcp",
+    "issuerUrl": "https://identity.example.org",
+    "loginUrl": "https://identity.example.org/login",
+    "validationUrl": "https://identity.example.org/oauth/introspect",
+    "scopes": ["skills:read"],
+    "validationClientIdEnv": "SKILLS_AUTH_CLIENT_ID",
+    "validationClientSecretEnv": "SKILLS_AUTH_CLIENT_SECRET",
+    "timeoutMs": 5000
+  }
+}
