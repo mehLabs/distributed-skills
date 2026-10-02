@@ -8,7 +8,7 @@ files on demand.
 MIT licensed: free to use, modify, redistribute, self-host, and use commercially.
 
 **Setting this up for your company?** Follow the
-[company setup guide (Español)](docs/company-setup.md): run one shared MCP,
+[company setup guide](docs/company-setup.md): run one shared MCP,
 configure optional login, add skills in nested folders, and connect employees' agents.
 
 ## Quick start

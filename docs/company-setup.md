@@ -1,18 +1,17 @@
-# Usar Distributed Skills en tu empresa
+# Using Distributed Skills at your company
 
-Levantá un único servidor MCP, agregá las skills de tu empresa en una carpeta y
-conectá los agentes de tus empleados a su URL. El login es opcional. Las skills
-pueden estar agrupadas por equipo o área, con tantos niveles de carpetas como
-necesites.
+Run a single MCP server, add your company's skills to a folder, and connect your
+employees' agents to its URL. Sign-in is optional. Organize skills by team or
+area, with as many nested folders as you need.
 
-Esta guía usa HTTP para compartir un servidor entre empleados. Necesitás
-Node.js 22 o superior, npm y una máquina con acceso desde los clientes que lo
-van a usar. El proyecto tiene licencia MIT y se puede usar comercialmente.
+This guide uses HTTP to share one server across employees. You need Node.js 22
+or later, npm, and a machine that the clients can reach. The project is MIT
+licensed and can be used commercially.
 
-## 1. Instalar
+## 1. Install
 
-Cloná este repositorio y entrá en su carpeta (o descargalo desde GitHub y abrí
-una terminal en la carpeta descargada):
+Clone this repository and enter its directory, or download it from GitHub and
+open a terminal in the downloaded directory:
 
 ```sh
 git clone https://github.com/mehLabs/distributed-skills.git
@@ -21,88 +20,87 @@ npm ci
 npm run build
 ```
 
-Los siguientes comandos se ejecutan desde esa misma carpeta. El proyecto se
-instala desde el repositorio; no requiere un paquete publicado en npm.
+Run the following commands from that same directory. Installation uses the
+repository; it does not require a package published to npm.
 
-## 2. Agregar las skills de la empresa
+## 2. Add your company's skills
 
-Usá la carpeta `skills/` incluida en el repositorio o una carpeta propia. Cada
-skill debe tener su propio directorio con un archivo llamado **`SKILL.md`**,
-respetando las mayúsculas.
+Use the repository's `skills/` directory or a directory of your own. Each skill
+needs its own folder containing a file named **`SKILL.md`**, with that exact
+capitalization.
 
 ```text
 skills/
-└── empresa/
-    ├── ingenieria/
-    │   └── revision-codigo/
+└── company/
+    ├── engineering/
+    │   └── code-review/
     │       ├── SKILL.md
     │       └── references/
     │           └── checklist.md
-    └── soporte/
-        └── respuesta-incidente/
+    └── support/
+        └── incident-response/
             ├── SKILL.md
             └── assets/
-                └── plantilla.md
+                └── template.md
 ```
 
-Las carpetas de agrupación, como `empresa/` o `ingenieria/`, no necesitan un
-`SKILL.md`. El MCP busca skills **recursivamente**, incluyendo las que estén
-dentro de otras skills. Los ejemplos que ya vienen en `skills/` también se
-publican si usás esa carpeta.
+Grouping folders, such as `company/` or `engineering/`, do not need a `SKILL.md`.
+The MCP discovers skills **recursively**, including skills nested inside other
+skills. The examples already included in `skills/` are also served if you use
+that directory.
 
-Para crear la primera skill, guardá este contenido en
-`skills/empresa/ingenieria/revision-codigo/SKILL.md`:
+To create your first skill, save the following content to
+`skills/company/engineering/code-review/SKILL.md`:
 
 ```markdown
 ---
-name: revision-codigo
-description: Revisar cambios de código cuando el usuario pide evaluar un parche o una pull request.
+name: code-review
+description: Review code changes when the user asks to evaluate a patch or pull request.
 ---
 
-Revisá los cambios buscando errores de comportamiento y regresiones.
-Explicá cada problema con un ejemplo concreto y su impacto.
-Si no encontrás problemas, indicá qué verificaste y qué quedó pendiente.
+Review the changes for behavior errors and regressions.
+Explain each issue with a concrete example and its impact.
+If you find no issues, describe what you checked and what remains unverified.
 ```
 
-Los dos campos iniciales son obligatorios:
+Both frontmatter fields are required:
 
-| Campo | Qué poner |
+| Field | What to provide |
 | --- | --- |
-| `name` | Un nombre de 1 a 64 caracteres con letras minúsculas sin acentos, números y guiones. Usá el mismo nombre que la carpeta de la skill. Sin guiones iniciales, finales ni consecutivos. |
-| `description` | Cuándo debe usarla el agente. Entre 1 y 1024 caracteres. |
+| `name` | A name of 1–64 characters using lowercase ASCII letters, digits, and hyphens. Use the same name as the skill folder, with no leading, trailing, or consecutive hyphens. |
+| `description` | When the agent should use the skill. Between 1 and 1024 characters. |
 
-Debajo del encabezado van las instrucciones. Podés escribirlas en el idioma
-que prefieras. Para agregar material de apoyo, colocá archivos en la carpeta
-de la skill y referencialos desde las instrucciones, por ejemplo:
+Write the instructions below the frontmatter in whichever language you prefer.
+To add supporting material, place files inside the skill folder and reference
+them from the instructions, for example:
 
 ```markdown
-Antes de finalizar la revisión, leé [el checklist](references/checklist.md).
+Before completing the review, read [the checklist](references/checklist.md).
 ```
 
-El ID de esta skill será `empresa/ingenieria/revision-codigo`. El agente usa
-ese ID para leer las instrucciones y sus archivos. Dos áreas pueden tener
-skills con el mismo nombre si sus rutas son distintas.
+This skill's ID is `company/engineering/code-review`. The agent uses that ID to
+read its instructions and files. Two teams can have skills with the same name
+if their paths differ.
 
-Todos los archivos dentro de una skill pueden ser leídos por los usuarios con
-acceso al catálogo: guardá ahí solo material que quieras compartir. Los archivos
-tienen un límite de 1 MiB cada uno. Los enlaces simbólicos y las carpetas
-`.git`, `node_modules` y `.cache` se excluyen. El MCP entrega archivos; los
-scripts que incluyas no se ejecutan en el servidor.
+Users with catalog access can read every file inside a skill, so store only
+material you intend to share there. Each file is limited to 1 MiB. Symbolic
+links and the `.git`, `node_modules`, and `.cache` directories are excluded.
+The MCP serves files; included scripts are not executed on the server.
 
-Validá la carpeta antes de levantar el servidor:
+Validate the directory before starting the server:
 
 ```sh
 node dist/cli.js --skills-dir ./skills --check
 ```
 
-La salida lista las skills y sus `diagnostics`. Si una skill tiene un encabezado
-inválido, corregí el archivo indicado; el comando termina con código 1 cuando
-hay diagnósticos. Una carpeta vacía es válida.
+The output lists skills and their `diagnostics`. If a skill has invalid
+frontmatter, fix the indicated file. The command exits with code 1 when there
+are diagnostics. An empty directory is valid.
 
-## 3. Levantar el MCP sin login
+## 3. Start the MCP without sign-in
 
-Copiá [skills-mcp.config.example.json](../skills-mcp.config.example.json) a
-`skills-mcp.config.json` en la raíz del repositorio. Su contenido es:
+Copy [skills-mcp.config.example.json](../skills-mcp.config.example.json) to
+`skills-mcp.config.json` at the repository root. Its content is:
 
 ```json
 {
@@ -112,40 +110,41 @@ Copiá [skills-mcp.config.example.json](../skills-mcp.config.example.json) a
 }
 ```
 
-Levantá el servidor:
+Start the server:
 
 ```sh
 node dist/cli.js --transport http --config ./skills-mcp.config.json --skills-dir ./skills --port 3000
 ```
 
-La URL local es **`http://127.0.0.1:3000/mcp`**. Dejá el proceso en ejecución;
-podés detenerlo con `Ctrl+C`. Con `enabled: false`, cualquier cliente que pueda
-acceder al servidor y pase las restricciones de Host puede leer las skills.
+The local URL is **`http://127.0.0.1:3000/mcp`**. Keep the process running; stop
+it with `Ctrl+C`. With `enabled: false`, any client that can reach the server
+and passes the Host restrictions can read the skills.
 
-### Compartirlo con otras máquinas
+### Share it with other machines
 
-Para atender conexiones desde otras máquinas, cambiá el host y permití el
-nombre con el que los clientes o el proxy accederán al servidor:
+To accept connections from other machines, change the listening address and
+allow the hostname that clients or the proxy will use to access the server:
 
 ```sh
 node dist/cli.js --transport http --config ./skills-mcp.config.json --skills-dir ./skills --host 0.0.0.0 --port 3000 --allowed-hosts skills.example.org,localhost,127.0.0.1
 ```
 
-Reemplazá `skills.example.org` por el dominio de tu empresa. Si los empleados
-acceden directamente por una IP, agregá también esa IP a `--allowed-hosts`.
-Esta opción recibe nombres o IPs separados por comas, sin protocolo ni puerto.
+Replace `skills.example.org` with your company's domain. If employees connect
+directly using an IP address, add that IP to `--allowed-hosts` as well. This
+option accepts comma-separated hostnames or IP addresses, without a protocol
+or port.
 
-Publicá el servicio con la infraestructura habitual de tu empresa: un servicio
-que mantenga el proceso activo y, para acceso remoto, un proxy con HTTPS. Con
-ese dominio, los empleados se conectarán a **`https://skills.example.org/mcp`**.
-El comando anterior inicia el servidor HTTP; el dominio, el certificado HTTPS
-y el proxy se configuran en tu infraestructura.
+Deploy using your company's usual infrastructure: a service that keeps the
+process running and, for remote access, a proxy with HTTPS. With that domain,
+employees connect to **`https://skills.example.org/mcp`**. The command above
+starts the HTTP server; configure the domain, HTTPS certificate, and proxy in
+your infrastructure.
 
-## 4. Configurar el login, si lo necesitás
+## 4. Configure optional sign-in
 
-Para habilitarlo, reemplazá el contenido de `skills-mcp.config.json` por el de
-[examples/config/auth.enabled.json](../examples/config/auth.enabled.json) y
-completá las URLs de tu proveedor OAuth:
+To enable authentication, replace `skills-mcp.config.json` with the content of
+[examples/config/auth.enabled.json](../examples/config/auth.enabled.json) and
+fill in your OAuth provider's URLs:
 
 ```json
 {
@@ -163,141 +162,140 @@ completá las URLs de tu proveedor OAuth:
 }
 ```
 
-| Opción | Valor que necesitás |
+| Option | Value you need |
 | --- | --- |
-| `resourceUrl` | URL pública de este MCP. También debe ser la audiencia del token. |
-| `issuerUrl` | Identificador del proveedor OAuth que emite los tokens. |
-| `loginUrl` | Página donde el empleado puede iniciar sesión u obtener credenciales. |
-| `validationUrl` | Endpoint de introspección que verifica los tokens. |
-| `scopes` | Permisos necesarios para leer las skills. Usá `[]` si no exigís scopes. |
-| `validationClientIdEnv` / `validationClientSecretEnv` | Nombres de las variables que contienen las credenciales del servidor para consultar la introspección. |
+| `resourceUrl` | This MCP's public URL. It must also be the token audience. |
+| `issuerUrl` | The identifier of the OAuth provider that issues the tokens. |
+| `loginUrl` | The page where employees can sign in or obtain credentials. |
+| `validationUrl` | The introspection endpoint that checks tokens. |
+| `scopes` | Permissions required to read skills. Use `[]` if no scopes are required. |
+| `validationClientIdEnv` / `validationClientSecretEnv` | Names of the environment variables containing the server's introspection client credentials. |
 
-Las URLs van en el JSON; las credenciales van en variables de entorno. Con
-los nombres del ejemplo, configurá estas dos variables en el proceso del MCP:
+URLs belong in the JSON file; credentials belong in environment variables.
+Using the names above, set these two variables in the MCP process environment:
 
-Linux/macOS, en bash:
+Linux/macOS, using bash:
 
 ```sh
-export SKILLS_AUTH_CLIENT_ID='id-del-cliente-de-introspeccion'
-export SKILLS_AUTH_CLIENT_SECRET='secreto-del-cliente-de-introspeccion'
+export SKILLS_AUTH_CLIENT_ID='introspection-client-id'
+export SKILLS_AUTH_CLIENT_SECRET='introspection-client-secret'
 ```
 
-Windows, en PowerShell:
+Windows, using PowerShell:
 
 ```powershell
-$env:SKILLS_AUTH_CLIENT_ID = 'id-del-cliente-de-introspeccion'
-$env:SKILLS_AUTH_CLIENT_SECRET = 'secreto-del-cliente-de-introspeccion'
+$env:SKILLS_AUTH_CLIENT_ID = 'introspection-client-id'
+$env:SKILLS_AUTH_CLIENT_SECRET = 'introspection-client-secret'
 ```
 
-Para un despliegue permanente, inyectá esos valores mediante el servicio o el
-gestor de secretos que levanta el MCP. El servidor **no carga archivos `.env`
-automáticamente**. Estas credenciales pertenecen al servidor: cada empleado
-obtiene su propio access token al iniciar sesión desde su cliente MCP.
+For a permanent deployment, inject these values through the service or secret
+manager that starts the MCP. The server **does not load `.env` files
+automatically**. These are server credentials; each employee obtains their own
+access token by signing in through their MCP client.
 
-Reiniciá el servidor con el mismo comando de la sección anterior. El agente
-puede consultar `get_auth_info` sin credenciales para descubrir el login.
-El cliente MCP gestiona la sesión y envía el token en las lecturas de skills;
-los empleados no necesitan pasar sus credenciales al agente por chat.
+Restart the server using the same command from the previous section. The agent
+can call `get_auth_info` without credentials to discover sign-in instructions.
+The MCP client manages the session and sends the token when reading skills.
+Employees do not need to share their credentials with the agent in chat.
 
-El proveedor OAuth debe ofrecer un flujo compatible con el cliente MCP y una
-introspección que devuelva `active`, `iss`, `aud`, `exp` y los scopes requeridos.
-El MCP usa ese proveedor existente para el login y la emisión de tokens.
-La [documentación de autenticación](authentication.md) describe el contrato
-completo, la configuración del proveedor y los endpoints que debe exponer el
-proxy: `/mcp`, `/auth` y los metadatos OAuth anunciados por el servidor.
+The OAuth provider must support a flow compatible with the MCP client and an
+introspection response containing `active`, `iss`, `aud`, `exp`, and the required
+scopes. The MCP uses that existing provider for sign-in and token issuance.
+The [authentication documentation](authentication.md) describes the full
+contract, provider configuration, and endpoints the proxy must expose: `/mcp`,
+`/auth`, and the OAuth metadata advertised by the server.
 
-Para desactivar el login, cambiá únicamente `enabled` a `false` y reiniciá.
-Podés conservar las URLs y retirar las variables de credenciales. Todos los
-usuarios autorizados comparten el mismo catálogo; no hay filtros por empleado.
+To disable sign-in, change only `enabled` to `false` and restart. You can retain
+the URLs and remove the credential environment variables. All authorized users
+share the same catalog; there is no per-employee filtering.
 
-## 5. Conectar los agentes de los empleados
+## 5. Connect employees' agents
 
-En cada herramienta que soporte MCP por **Streamable HTTP**, agregá un servidor
-con estos datos:
+In each tool that supports MCP over **Streamable HTTP**, add a server with
+these settings:
 
-| Dato | Valor |
+| Setting | Value |
 | --- | --- |
-| Nombre | `distributed-skills` o el nombre que prefieras. |
-| Transporte | Streamable HTTP. |
-| URL | `https://skills.example.org/mcp`, reemplazando el dominio. Para una prueba en la misma máquina: `http://127.0.0.1:3000/mcp`. |
-| Autenticación | Sin credenciales cuando está desactivada; flujo OAuth del cliente cuando está activada. |
+| Name | `distributed-skills`, or a name of your choice. |
+| Transport | Streamable HTTP. |
+| URL | `https://skills.example.org/mcp`, replacing the domain. To try it on the same machine, use `http://127.0.0.1:3000/mcp`. |
+| Authentication | No credentials when disabled; the client's OAuth flow when enabled. |
 
-La ubicación y el formato de esta configuración dependen de la herramienta.
-Para OAuth, usá un cliente con soporte de autenticación MCP. Los empleados
-apuntan al mismo servidor; no necesitan instalar ni ejecutar el repositorio.
+The location and format of this configuration depend on the tool. For OAuth,
+use a client that supports MCP authentication. Employees connect to the same
+server; they do not need to install or run the repository.
 
-Para comprobar la conexión, pedile al agente:
+To check the connection, ask the agent:
 
-> Consultá `get_auth_info` y después listá las skills disponibles con
-> `list_skills`. Si hace falta, indicame cómo iniciar sesión desde el cliente.
+> Call `get_auth_info`, then list the available skills with `list_skills`.
+> If necessary, tell me how to sign in through the client.
 
-Después puede buscar y leer una skill:
+The agent can then search for and read a skill:
 
 ```text
-search_skills({"query":"revision"})
-get_skill({"id":"empresa/ingenieria/revision-codigo"})
+search_skills({"query":"review"})
+get_skill({"id":"company/engineering/code-review"})
 ```
 
-### Consultar las skills al empezar una tarea
+### Consult skills when starting a task
 
-Si querés una instrucción reutilizable para empleados, copiá la carpeta
-[examples/discover-shared-skills](../examples/discover-shared-skills) a la
-ubicación de skills que soporte su herramienta. También podés agregar esta
-instrucción persistente en el cliente:
+For a reusable entry skill for employees, copy the
+[examples/discover-shared-skills](../examples/discover-shared-skills) directory
+to a skill location supported by their tool. You can also add this persistent
+instruction to the client:
 
-> Antes de empezar una tarea de trabajo, consultá el MCP distributed-skills,
-> descubrí si requiere login y leé las skills aplicables antes de actuar.
+> Before starting a work task, consult the distributed-skills MCP, discover
+> whether sign-in is required, and read the applicable skills before acting.
 
-La conexión MCP se configura por separado. La selección automática de skills
-depende del agente y su herramienta; leer instrucciones remotas no las instala
-como skills locales.
+Configure the MCP connection separately. Automatic skill selection depends on
+the agent and its tool; reading remote instructions does not install them as
+local skills.
 
-## 6. Actualizar y comprobar el servicio
+## 6. Update and check the service
 
-Agregá, editá o quitá carpetas y archivos dentro de la raíz de skills. Los cambios
-se ven en la siguiente consulta, **sin reiniciar el MCP**. Si movés una skill,
-su ID cambia. Para usar otra raíz, cambiá `--skills-dir` y reiniciá.
+Add, edit, or remove folders and files inside the skills root. Changes appear
+on the next query **without restarting the MCP**. Moving a skill changes its
+ID. To use a different root, change `--skills-dir` and restart.
 
-Podés indicar una carpeta fuera del repositorio para mantener las skills
-internas por separado, por ejemplo:
+You can use a directory outside the repository to keep internal skills
+separate, for example:
 
 ```sh
 node dist/cli.js --transport http --config ./skills-mcp.config.json --skills-dir /srv/company-skills
 ```
 
-En Windows, usá una ruta como `C:/Company/Skills`. Si contiene espacios, ponela
-entre comillas. También podés definir la variable `SKILLS_DIR`; `--skills-dir`
-tiene prioridad. Para el archivo de configuración existe `SKILLS_MCP_CONFIG`;
-`--config` tiene prioridad. Las rutas relativas se resuelven desde la carpeta
-de trabajo del proceso.
+On Windows, use a path such as `C:/Company/Skills`. Quote paths containing
+spaces. You can also set the `SKILLS_DIR` environment variable; `--skills-dir`
+takes precedence. For the configuration file, use `SKILLS_MCP_CONFIG`;
+`--config` takes precedence. Relative paths are resolved against the process
+working directory.
 
-Para comprobar el proceso y la información pública de login desde la máquina
-del servidor:
+To check the process and public sign-in information from the server machine:
 
 ```sh
 curl http://127.0.0.1:3000/health
 curl http://127.0.0.1:3000/auth
 ```
 
-En Windows podés usar `curl.exe`. `/health` responde `{"status":"ok"}`;
-`/auth` indica si el login está habilitado y cómo hacerlo. Para comprobar el
-contenido de las skills, ejecutá `--check` con su carpeta o consultá
-`list_skills` desde un cliente MCP. El endpoint `/mcp` usa el protocolo MCP;
-abrirlo como una página web no comprueba que la conexión funcione.
+On Windows, use `curl.exe` if needed. `/health` returns `{"status":"ok"}`;
+`/auth` indicates whether sign-in is enabled and how to proceed. To check the
+skills themselves, run `--check` with their directory or call `list_skills`
+from an MCP client. The `/mcp` endpoint uses the MCP protocol; opening it as a
+web page does not verify that the connection works.
 
-## Resolver problemas frecuentes
+## Troubleshooting
 
-| Problema | Qué revisar |
+| Problem | What to check |
 | --- | --- |
-| No aparece una skill | Archivo llamado exactamente `SKILL.md`, encabezado con `name` y `description` válidos, carpeta dentro de la raíz servida. Ejecutá `--check` para ver diagnósticos. |
-| No se puede leer la configuración | Verificá la ruta de `--config` y que el archivo sea JSON válido. Un archivo seleccionado explícitamente debe existir. |
-| No conecta desde otra máquina | Dirección de escucha `--host`, puerto, firewall, proxy y dominio. `127.0.0.1` solo acepta conexiones locales. |
-| HTTP 401 al leer skills | Iniciá sesión en el cliente. Si ya lo hiciste, revisá que el token no esté vencido y que su issuer y audiencia coincidan con el JSON. |
-| HTTP 403 por Host u Origin | Permití el hostname enviado por el cliente o proxy. Para clientes de navegador, revisá `SKILLS_MCP_ALLOWED_ORIGINS` y la configuración CORS del gateway, como explica el [README](../README.md#share-one-http-server). |
-| HTTP 403 por scopes | El token debe incluir todos los scopes configurados. |
-| HTTP 503 al validar credenciales | Revisá la disponibilidad y respuesta de `validationUrl`, el timeout y las credenciales de introspección del servidor. |
-| Error de credenciales al arrancar | Configurá ambas variables nombradas en `validationClientIdEnv` y `validationClientSecretEnv` en el entorno del proceso. |
+| A skill is missing | A file named exactly `SKILL.md`, valid `name` and `description` frontmatter, and a folder inside the served root. Run `--check` for diagnostics. |
+| Cannot read the configuration | Check the `--config` path and confirm that the file contains valid JSON. An explicitly selected file must exist. |
+| Cannot connect from another machine | Listening address (`--host`), port, firewall, proxy, and domain. `127.0.0.1` accepts only local connections. |
+| HTTP 401 when reading skills | Sign in through the client. If already signed in, check token expiry and confirm that its issuer and audience match the JSON configuration. |
+| HTTP 403 for Host or Origin | Allow the hostname sent by the client or proxy. For browser clients, check `SKILLS_MCP_ALLOWED_ORIGINS` and the gateway's CORS settings, as described in the [README](../README.md#share-one-http-server). |
+| HTTP 403 for scopes | The token must include every configured scope. |
+| HTTP 503 when validating credentials | Check the availability and response of `validationUrl`, the timeout, and the server's introspection credentials. |
+| Missing credentials at startup | Set both variables named in `validationClientIdEnv` and `validationClientSecretEnv` in the process environment. |
 
-Para otros modos de conexión, herramientas disponibles y detalles del catálogo,
-consultá el [README](../README.md). Para integrar el proveedor de identidad,
-consultá [Autenticación](authentication.md).
+For other connection modes, available tools, and catalog details, see the
+[README](../README.md). For identity provider integration, see
+[Authentication](authentication.md).
